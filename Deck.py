@@ -1,10 +1,13 @@
 from Card import Card
 from enumns import Rank, Suit
+from Stack import Stack
+import random
 
-class Deck():
+class Deck(Stack):
     def __init__(self):
-        self.deck = []
+        super().__init__()
         self.create_deck()
+        self.shuffle()
 
     def create_deck(self):
         suits = [Suit.CLUB, Suit.DIAMOND, Suit.SPADE, Suit.HEART]
@@ -18,16 +21,8 @@ class Deck():
         self.deck.append(Card(Suit.NONE, Rank.JOKER))
         self.deck.append(Card(Suit.NONE, Rank.JOKER))
 
-    def shuffle():
-        pass
+    def shuffle(self):
+        random.shuffle(self.deck)
 
-    # returns the top card
-    def pop():
-        pass
-
-    def isEmpty():
-        pass
-
-    def print_deck(self):
-        for card in self.deck:
-            print(repr(card))
+    def get_top_card(self):
+        return self.deck.pop()
