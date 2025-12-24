@@ -1,21 +1,317 @@
 from Deck import Deck
 from Hand import Hand
+from Discard import Discard
+from Card import Card
 
 NUMBER_OF_PLAYERS = 2
 
-# create a deck of cards
-deck = Deck()
+controls = '''
+******************************** 
+* P: pick up card from deck    * 
+* D: pick up card from discard * 
+* S: to snap                   *
+* U: use power                 *
+* Q: quit                      *
+********************************
+'''
+class Game:
+    def __init__(self):
+        # create a deck of cards
+        self.deck = Deck()
+        self.discard = Discard()
 
-# create 2 hands
-hand1 = Hand("rachel")
-hand2 = Hand("sophie")
+        finished = False
+        self.turn = 0
+
+        # create 2 hands
+        hand1 = Hand("rachel")
+        hand2 = Hand("sophie")
+        self.hands = ["",hand1, hand2]
+
+        self.deal(self.deck, self.hands)
+
+        while finished is False:
+            print(self.turn)
+            hand = self.hands[self.turn]
+            
+            print(controls)
+            self.print_table() 
+            print(f"Player {self.turn}'s turn")
+            print(f"Top card on deck: {self.discard.show_top_card()}")
+    
+            choice = input("select option P or D or or U or S or Q : ")
+
+            match choice:
+                case "P":
+                    # remove card from deck
+                    deck_card = self.deck.get_top_card()
+
+                    print(f"card picked up: {deck_card}")
+                    placing = True
+                    while placing:
+                        option = input("P to place down, R to replace ")
+                        match option:
+                            case "P":
+                                print("use the power!!")
+                                self.use_power(deck_card, hand)
+                                placing = False
+                            
+                            case "R":
+                                replacing = True
+                                while replacing:
+                                    index = int(input("which card to replace with? "))
+                                    # should check this is valid
+                                    if hand.is_valid_position(index):
+                                        self.replace_card(hand, deck_card, index)
+                                        placing = False
+                                        replacing = False
+                                    else:
+                                        print("not valid card option!")
+                                
+                            case _:
+                                print("invalid option")
+
+                    
+                    
+                case "D":
+                    # should check here there is actually a card
+                    deck_card = self.discard.get_top_card()
+                    replacing = True
+                    while replacing:
+                        index = int(input("Which card to replace with?"))
+                        if hand.is_valid_position(index):
+                            self.replace_card(hand, deck_card, index)
+                            replacing = False
+                        else:
+                            print("not a valid card option!")
+
+                case "S":
+                    top_discard_card = self.discard.show_top_card()
+                    snapping = True
+                    while snapping:
+                        index = int(input("Which do you want to snap"))
+                        if hand.is_valid_position(index):
+                            card = hand.reveal(index)
+                            if self.can_snap(top_discard_card, card):
+                                print("they can be snapped!")
+                                self.snap(hand, index)
+                            else:
+                                print("wrong those cards are not the same!")
+                                self.penality(hand)
+                        else:
+                            print("invalid card")
+                   
+                case "Q":
+                    print("goodbye ;(")
+                    return
+                case _:
+                    print("\nINVALID OPTION\n")
+            self.next_player()
+          
 
 
-# game play works by dealing 4 cards to each player initially
-for x in range (4):
-    hand1.add(deck.get_top_card())
-    hand2.add(deck.get_top_card())
+    def deal(self, deck, hands):
+        # game play works by dealing 4 cards to each player initially
+        for x in range (4):
+            for y in range(NUMBER_OF_PLAYERS):
+                hand = hands[y+1]
+                hand.add(deck.get_top_card())
+
+    def next_player(self):
+        self.turn = (self.turn % NUMBER_OF_PLAYERS) + 1
+        print(f"turn: {self.turn}")
+        # 0 ->1 , 1-> 0 
+        # 0 % 2 = 0 + 1= 1
+        # 1 % 2 = 1 + 1
+    
+    def print_table(self):
+        print("Player 1")
+        self.hands[1].print_deck()
+        print("\nPlayer 2")
+        self.hands[2].print_deck()
+        print("\n")
 
 
-hand1.print_deck()
-hand2.print_deck()
+    def use_power(self, card: Card, hand: Hand):
+        if card.is_power_card():          
+            # 7 or an 8
+            if card.is_78():
+                # reveal one card
+                self.look_at_own(hand)
+
+            # 9 or 10 : look at someone else
+            
+            elif card.is_910():
+                self.look_at_someone_else(hand)
+            # J or Q
+            elif card.is_JQ():
+                self.swap_two_cards()
+            # K
+            elif card.is_K():
+                self.look_at_two_and_swap()
+        else:
+            print("this is not a power card")
+        self.discard.add(card)
+
+    # replace the card with one in the hand
+    def replace_card(self, hand: Hand, card_from_deck: Card, pos_in_hand: int):
+        # remove card from hand 
+        # removed_card = hand.remove(pos_in_hand)
+        removed_card = hand.replace(card_from_deck, pos_in_hand)
+        # add removed card to the deck
+        self.discard.add(removed_card)
+
+
+    def snap(self, hand: Hand, position):
+        # should remove from hand
+        c = hand.remove(position)
+        # then add to the discard pile
+        self.discard.add(c)
+
+    # returns True if the top card of the discard is the same as card wanting to snap 
+    def can_snap(self, discard: Card, hand: Card):
+        if hand.same_rank(discard):
+            return True
+        return False
+    
+    def penality(self, hand: Hand):
+        print("oops you made a mistake heres another card :)")
+        c = self.deck.get_top_card()
+        hand.add(c)
+
+    def look_at_own(self, hand: Hand):
+        revealing = True
+        while revealing:
+            index = int(input("What card to reveal? "))
+            if hand.is_valid_position(index):
+                print(f"that card is: {hand.reveal(index)}")
+                revealing = False
+            else:
+                print("not a correct index")
+
+    def look_at_someone_else(self, hand: Hand):
+        # make sure not youre own hand
+        revealing = True
+        while revealing:
+            try:
+                player = int(input("Which player would you like to look at? "))
+                if self.is_a_player(player) or self.is_another_player(player):
+                    other_hand: Hand = self.hands[player]
+                    get_index = True
+                    while get_index:
+                        index = int(input("Which card would you like to look at? "))
+                        if other_hand.is_valid_position(index):
+                            card1 = other_hand.reveal(index)
+                            print(f"that card is: {card1}")
+                            get_index = False
+                            revealing = False
+                        else:
+                            print("invalid position, try again")
+                    
+                else:
+                    print("incorrect player!")
+
+            except ValueError:
+                print("Not an integer!")
+
+        
+    def swap_two_cards(self):
+        swapping = True
+        while swapping:
+            try:
+                player1_index = int(input("CARD 1: Which player to swap with? "))
+                if self.is_a_player(player1_index):
+                    try:
+                        card1_position = int(input(f"CARD 1: Which card from player {player1_index}? "))
+                        player1: Hand = self.hands[player1_index]
+                        if player1.is_valid_position(card1_position):
+                            card1 = player1.reveal(card1_position)
+                            try:
+                                player2_index = int(input("CARD 2: Which player to swap with? "))
+                                if self.is_a_player(player2_index):
+                                    try:
+                                        card2_position = int(input(f"CARD 2: Which card from player {player2_index}? "))
+                                        player2: Hand = self.hands[player2_index]
+                                        if player2.is_valid_position(card2_position):
+                                            card2 = player2.reveal(card2_position)
+                                            self.swap(card1, card2, player1, player2, card1_position, card2_position)
+                                            swapping = False
+                                    except ValueError:
+                                        print("Not an integer")
+                            except ValueError:
+                                print("Not an integer")
+
+                        else:
+                            print("Not a valid card")
+                    except ValueError:
+                        print("Not an integer!")
+                else:
+                    print("not a valid player")
+            except ValueError:
+                print("Not an integer!")
+
+    def look_at_two_and_swap(self):
+        swapping = True
+        while swapping:
+            try:
+                player1_index = int(input("CARD 1: Which player to look at? "))
+                if self.is_a_player(player1_index):
+                    try:
+                        card1_position = int(input(f"CARD 1: Which card from player {player1_index}? "))
+                        player1: Hand = self.hands[player1_index]
+                        if player1.is_valid_position(card1_position):
+                            card1 = player1.reveal(card1_position)
+                            print(f"CARD 1 is {card1}")
+                            try:
+                                player2_index = int(input("CARD 2: Which player to look at? "))
+                                if self.is_a_player(player2_index):
+                                    try:
+                                        card2_position = int(input(f"CARD 2: Which card from player {player2_index}? "))
+                                        player2: Hand = self.hands[player2_index]
+                                        if player2.is_valid_position(card2_position):
+                                            card2 = player2.reveal(card2_position)
+                                            print(f"CARD 2 is {card2}")
+                                            y_or_n = True
+                                            while y_or_n:
+                                                to_swap = input("Do you want to swap these cards? (y or n)")
+                                                if to_swap == "y":
+                                                    self.swap(card1, card2, player1, player2, card1_position, card2_position)
+                                                    y_or_n = False
+                                                elif to_swap == "n":
+                                                    y_or_n = False
+                                                else:
+                                                    print("not correct option ")
+                                            swapping = False
+                                    except ValueError:
+                                        print("Not an integer")
+                            except ValueError:
+                                print("Not an integer")
+
+                        else:
+                            print("Not a valid card")
+                    except ValueError:
+                        print("Not an integer!")
+                else:
+                    print("not a valid player")
+            except ValueError:
+                print("Not an integer!")
+
+            
+
+    def swap(self, c1: Card, c2: Card, hand1: Hand, hand2: Hand, p1, p2):
+        hand1.replace(c2)
+        hand2.replace(c1)
+        # hope this is correct ngl probs not
+
+
+    def is_a_player(self, player):
+        if player >= NUMBER_OF_PLAYERS and player != 0:
+            return True
+        return False
+
+    def is_another_player(self, other_player):
+        if other_player != self.turn:
+            return True
+        return False
+
+my_game = Game()

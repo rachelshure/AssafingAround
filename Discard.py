@@ -4,5 +4,15 @@ class Discard(Stack):
     def __init__(self):
         super().__init__()
 
-    def add(self, card):
-        self.deck.append(card)
+    
+
+    def get_top_card(self):
+        
+        if (self.is_empty()):
+            return -1
+        return self.deck.pop()
+    
+    def show_top_card(self):
+        if (self.is_empty()):
+            return -1
+        return self.deck[-1]

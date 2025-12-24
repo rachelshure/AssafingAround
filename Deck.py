@@ -26,3 +26,12 @@ class Deck(Stack):
 
     def get_top_card(self):
         return self.deck.pop()
+    
+    
+    
+    def show_top_card(self):
+        if self.isEmpty():
+            # should shuffle now
+            return None
+
+        return self.deck[-1]

@@ -19,6 +19,7 @@ class Rank(Enum):
     QUEEN = "queen"
     JACK = "jack"
     JOKER = "joker"
+    NONE = " "
     
     def __str__(self): 
         return self.value
