@@ -12,9 +12,14 @@ class Deck(Stack):
     def create_deck(self):
         suits = [Suit.CLUB, Suit.DIAMOND, Suit.SPADE, Suit.HEART]
         for suit in suits:
-            for number in range(1, 14):
+            self.deck.append(Card(suit, Rank.ACE))
+            for number in range(2, 11):
                 card = Card(suit, number)
                 self.deck.append(card)
+            self.deck.append(Card(suit, Rank.JACK))
+            self.deck.append(Card(suit, Rank.QUEEN))
+            self.deck.append(Card(suit, Rank.KING))
+
         self.add_jokers()
 
     def add_jokers(self):
