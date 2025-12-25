@@ -47,9 +47,19 @@ class Card:
         if self.rank == Rank.JACK or self.rank == Rank.QUEEN:
             return True
         return False
-    
+    #NOTES 4 thinks its a JQ??
     def is_K(self):
         if self.rank == Rank.KING:
+            return True
+        return False
+    
+    def is_A(self):
+        if self.rank == Rank.ACE:
+            return True
+        return False
+    
+    def is_Joker(self):
+        if self.rank == Rank.JOKER:
             return True
         return False
     
@@ -64,3 +74,26 @@ class Card:
         if self.is_78() or self.is_910() or self.is_K() or self.is_JQ():
             return True
         return False
+    
+    def get_value(self):
+        if self.is_JQ():
+            return 10
+        
+        elif self.is_Joker():
+            return 0
+        
+        elif self.is_K():
+            if self.suit == Suit.DIAMOND or self.suit == Suit.HEART:
+                return -1
+            
+            else:
+                return 10
+            
+        elif self.is_A():
+            return 1
+
+        elif self.rank == Rank.NONE and self.rank == Suit.NONE:
+            return 0
+        
+        return self.rank
+    

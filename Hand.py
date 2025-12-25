@@ -48,6 +48,14 @@ class Hand(Stack):
         if c != -1 and c.get_rank() != Rank.NONE and c.get_suit() != Suit.NONE:
             return True
         return False
+    
+    def score(self):
+        my_score = 0
+        for card in self.deck:
+            print(card.get_value())
+            my_score += card.get_value()
+
+        return my_score
 
 
     
