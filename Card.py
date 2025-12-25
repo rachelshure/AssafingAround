@@ -63,6 +63,11 @@ class Card:
             return True
         return False
     
+    def is_blank(self):
+        if self.rank == Rank.NONE and self.suit == Suit.NONE:
+            return True
+        return False
+    
     
     def get_suit(self):
         return self.get_suit

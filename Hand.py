@@ -35,11 +35,81 @@ class Hand(Stack):
         print("error - position does not exisit")
         return -1
 
-    def print_hand(self):
-        pass
-        # number_of_cards = self.number_of_cards()
+    def print_hand_blank(self):
+        row0 = ""
+        row1 = ""
+        for x in range(0, 2):
+            card: Card = self.deck[x]
+            if card.is_blank() is False:
+                row0 += "X "
+            else:
+                row0 += "  "
 
-        # for x in range(number_of_cards):
+        for y in range(2, 4):
+            card: Card = self.deck[y]
+            if card.is_blank() is False:
+                row1 += "X "
+            else:
+                row1 += "  "
+
+        for z in range(4, len(self.deck), 2):
+            card: Card = self.deck[z]
+            if card.is_blank() is False:
+                row0 += "X "
+            else:
+                row0 += "  "
+            try:
+                card: Card = self.deck[z+1]
+                if card.is_blank() is False:
+                    row1 += "X "
+                else:
+                    row1 += "  "
+            except:
+                row1 += "  "
+
+        
+        print(row1)
+        print(row0)
+
+
+    def print_hand_initial(self):
+        row0 = ""
+        row1 = ""
+        for x in range(0, 2):
+            card: Card = self.deck[x]
+            if card.is_blank() is False:
+                row0 += str(card) + ", "
+            else:
+                row0 += "  "
+
+        for y in range(2, 4):
+            card: Card = self.deck[y]
+            if card.is_blank() is False:
+                row1 += "X "
+            else:
+                row1 += "  "
+
+        for z in range(4, len(self.deck), 2):
+            card: Card = self.deck[z]
+            if card.is_blank() is False:
+                row0 += "X "
+            else:
+                row0 += "  "
+            try:
+                card: Card = self.deck[z+1]
+                if card.is_blank() is False:
+                    row1 += "X "
+                else:
+                    row1 += "  "
+            except:
+                row1 += "  "
+
+        
+        print(row1)
+        print(row0)
+
+
+       
 
     # return true if valid position
     # return false if invalid position

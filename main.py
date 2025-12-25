@@ -2,7 +2,7 @@ from Deck import Deck
 from Hand import Hand
 from Discard import Discard
 from Card import Card
-
+from enumns import Suit, Rank
 NUMBER_OF_PLAYERS = 2
 
 controls = '''
@@ -32,7 +32,13 @@ class Game:
         hand2 = Hand("sophie")
         self.hands = ["",hand1, hand2]
 
+        
+
         self.deal(self.deck, self.hands)
+        
+        # testing printing handds
+        self.print_table_initial()
+        
 
         while self.assaf_called is False:
             
@@ -190,13 +196,19 @@ class Game:
 
     def next_player(self):
         self.turn = (self.turn % NUMBER_OF_PLAYERS) + 1
+
+    def print_table_initial(self):
+        for x in range(1, NUMBER_OF_PLAYERS+1):
+            print(f"Player {x}")
+            self.hands[x].print_hand_initial()
+            print("\n")
     
     def print_table(self):
-        print("Player 1")
-        self.hands[1].print_deck()
-        print("\nPlayer 2")
-        self.hands[2].print_deck()
-        print("\n")
+        for x in range(1, NUMBER_OF_PLAYERS+1):
+            print(f"Player {x}")
+            self.hands[x].print_hand_blank()
+            print("\n")
+           
 
 
     def use_power(self, card: Card, hand: Hand):
@@ -416,3 +428,20 @@ my_game = Game()
 
 # need to add if deck is empty to reshuffle
 # when should this be?
+
+
+"""
+Player 1
+c2 c3 c5
+c0 c1 c4
+
+two rows?
+
+Blank
+x x 
+x x 
+
+
+
+
+"""
