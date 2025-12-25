@@ -48,7 +48,6 @@ class Game:
             self.choose_option(hand, choice)
         
         # now assaf is called and everyone else get one more turn
-        last_go = True
         for x in range(NUMBER_OF_PLAYERS - 1):
             
             hand = self.hands[self.turn]
@@ -388,7 +387,6 @@ class Game:
         for h in range(1, NUMBER_OF_PLAYERS + 1):
             hand: Hand = self.hands[h]
             score = hand.score()
-            print(f"score {h} is {score}")
             if score < top_score:
                 top_score = score
                 top_player = h

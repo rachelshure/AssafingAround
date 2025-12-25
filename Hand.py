@@ -52,7 +52,6 @@ class Hand(Stack):
     def score(self):
         my_score = 0
         for card in self.deck:
-            print(card.get_value())
             my_score += card.get_value()
 
         return my_score
