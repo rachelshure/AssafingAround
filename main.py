@@ -44,7 +44,8 @@ class Game:
             print(f"Top card on deck: {self.discard.show_top_card()}")
     
             choice = input("select option P or D or U or S or A or Q : ")
-
+            while self.valid_option(choice) is False:
+                choice = input("select option P or D or U or S or A or Q : ")
             self.choose_option(hand, choice)
         
         # now assaf is called and everyone else get one more turn
@@ -76,6 +77,9 @@ class Game:
             case "D":
                 return True
             case "S":
+                if self.discard.is_empty():
+                    print("You can't snap as theres no card in the discard pile yet")
+                    return False
                 return True
             case "A":
                 if self.assaf_called:
@@ -142,17 +146,29 @@ class Game:
                 top_discard_card = self.discard.show_top_card()
                 snapping = True
                 while snapping:
-                    index = int(input("Which do you want to snap"))
-                    if hand.is_valid_position(index):
-                        card = hand.reveal(index)
-                        if self.can_snap(top_discard_card, card):
-                            print("they can be snapped!")
-                            self.snap(hand, index)
+                    try:
+                        player = int(input("Which players card do you want to snap with? "))
+                        if self.is_a_player(player):
+                            try:
+                                index = int(input("Which do you want to snap "))
+                                if hand.is_valid_position(index):
+                                    card = hand.reveal(index)
+                                    if self.can_snap(top_discard_card, card):
+                                        print("they can be snapped!")
+                                        snapping = False
+                                        self.snap(hand, index)
+                                    else:
+                                        print("wrong those cards are not the same!")
+                                        snapping = False
+                                        self.penality(hand)
+                                else:
+                                    print("invalid card")
+                            except ValueError:
+                                print("Not an integer!")
                         else:
-                            print("wrong those cards are not the same!")
-                            self.penality(hand)
-                    else:
-                        print("invalid card")
+                            print("not valid player")
+                    except ValueError:
+                        print("not an integer!")
 
             case "A":
                 self.call_assaf(self.turn)

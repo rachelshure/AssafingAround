@@ -43,8 +43,12 @@ class Deck(Stack):
         self.discard.shuffle()
         self.discard.shuffle()
         # add all cards from discard pile to the deck
+        # except the last card
+        last_card = self.discard.get_top_card()
         for card in self.discard:
             self.deck.append(card)
+        # add last card back to discard pile
+        self.discard.add(last_card)
     
     def show_top_card(self):
         return self.deck[-1]
