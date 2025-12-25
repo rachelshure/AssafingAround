@@ -21,7 +21,7 @@ class Game:
         self.discard = Discard()
 
         finished = False
-        self.turn = 0
+        self.turn = 1
 
         # create 2 hands
         hand1 = Hand("rachel")
@@ -31,7 +31,6 @@ class Game:
         self.deal(self.deck, self.hands)
 
         while finished is False:
-            print(self.turn)
             hand = self.hands[self.turn]
             
             print(controls)
@@ -52,21 +51,24 @@ class Game:
                         option = input("P to place down, R to replace ")
                         match option:
                             case "P":
-                                print("use the power!!")
                                 self.use_power(deck_card, hand)
                                 placing = False
                             
                             case "R":
                                 replacing = True
                                 while replacing:
-                                    index = int(input("which card to replace with? "))
-                                    # should check this is valid
-                                    if hand.is_valid_position(index):
-                                        self.replace_card(hand, deck_card, index)
-                                        placing = False
-                                        replacing = False
-                                    else:
-                                        print("not valid card option!")
+                                    try:
+                                        index = int(input("which card to replace with? "))
+
+                                        # should check this is valid
+                                        if hand.is_valid_position(index):
+                                            self.replace_card(hand, deck_card, index)
+                                            placing = False
+                                            replacing = False
+                                        else:
+                                            print("not valid card option!")
+                                    except ValueError:
+                                        print("Not an integer")
                                 
                             case _:
                                 print("invalid option")
@@ -119,10 +121,6 @@ class Game:
 
     def next_player(self):
         self.turn = (self.turn % NUMBER_OF_PLAYERS) + 1
-        print(f"turn: {self.turn}")
-        # 0 ->1 , 1-> 0 
-        # 0 % 2 = 0 + 1= 1
-        # 1 % 2 = 1 + 1
     
     def print_table(self):
         print("Player 1")
@@ -182,12 +180,15 @@ class Game:
     def look_at_own(self, hand: Hand):
         revealing = True
         while revealing:
-            index = int(input("What card to reveal? "))
-            if hand.is_valid_position(index):
-                print(f"that card is: {hand.reveal(index)}")
-                revealing = False
-            else:
-                print("not a correct index")
+            try:
+                index = int(input("What card to reveal? "))
+                if hand.is_valid_position(index):
+                    print(f"that card is: {hand.reveal(index)}")
+                    revealing = False
+                else:
+                    print("not a correct index")
+            except ValueError:
+                print("Not an integer")
 
     def look_at_someone_else(self, hand: Hand):
         # make sure not youre own hand
@@ -299,13 +300,13 @@ class Game:
             
 
     def swap(self, c1: Card, c2: Card, hand1: Hand, hand2: Hand, p1, p2):
-        hand1.replace(c2)
-        hand2.replace(c1)
+        hand1.replace(c2, p1)
+        hand2.replace(c1, p2)
         # hope this is correct ngl probs not
 
 
     def is_a_player(self, player):
-        if player >= NUMBER_OF_PLAYERS and player != 0:
+        if player <= NUMBER_OF_PLAYERS and player != 0:
             return True
         return False
 

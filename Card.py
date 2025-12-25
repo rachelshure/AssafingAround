@@ -35,25 +35,21 @@ class Card:
     
     def is_78(self):
         if self.rank == 7 or self.rank == 8:
-            print("is 7 8")
             return True
         return False
     
     def is_910(self):
         if self.rank == 9 or self.rank == 10:
-            print ("is 9 or 10")
             return True
         return False
     
     def is_JQ(self):
         if self.rank == Rank.JACK or self.rank == Rank.QUEEN:
-            print("is J or Q")
             return True
         return False
     
     def is_K(self):
         if self.rank == Rank.KING:
-            print("is king")
             return True
         return False
     
