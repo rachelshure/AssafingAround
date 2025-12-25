@@ -26,6 +26,7 @@ class Game:
         self.assaf_called = False
         self.player_called_assaf = -1
 
+
         # create 2 hands
         hand1 = Hand("rachel")
         hand2 = Hand("sophie")
@@ -34,6 +35,7 @@ class Game:
         self.deal(self.deck, self.hands)
 
         while self.assaf_called is False:
+            
             hand = self.hands[self.turn]
             
             print(controls)
@@ -46,21 +48,49 @@ class Game:
             self.choose_option(hand, choice)
         
         # now assaf is called and everyone else get one more turn
+        last_go = True
         for x in range(NUMBER_OF_PLAYERS - 1):
+            
             hand = self.hands[self.turn]
 
             print(controls)
             self.print_table() 
             print(f"Player {self.turn}'s turn")
             print(f"Top card on deck: {self.discard.show_top_card()}")
+
+            
     
             choice = input("select option P or D or U or S or A or Q : ")
-
+            while self.valid_option(choice) is False:
+                choice = input("select option P or D or U or S or A or Q : ")
             self.choose_option(hand, choice)
 
         winner, result = self.results()
         print(f"Player {winner} has won with a score of {result}")
+    
+    def valid_option(self, option):
+        match option:
+            case "P":
+                return True
+            case "R":
+                return True
+            case "D":
+                return True
+            case "S":
+                return True
+            case "A":
+                if self.assaf_called:
+                    print("you can't call assaf it has already been called")
+                    return False
+                else:
+                    return True
+            case "Q":
+                return True
 
+        return False
+
+    # return -1 for incorrect option
+    # return -2 for quit
     def choose_option(self, hand: Hand, choice):
         match choice:
             case "P":
@@ -130,9 +160,10 @@ class Game:
                 
             case "Q":
                 print("goodbye ;(")
-                return
+                return -2
             case _:
                 print("\nINVALID OPTION\n")
+                return -1
         self.next_player()
 
     def deal(self, deck, hands):
